@@ -1,1 +1,1 @@
-# Welcom to Jezong's blog.
+# Welcom to [Jezong's blog](http://jezong.github.io).
