@@ -52,6 +52,50 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2016-02-23T04:59:15.000Z"><a href="/2016/02/23/copy-object-by-copyfunc/">2016-02-23</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/23/copy-object-by-copyfunc/">如何使用copy方法来复制对象</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>在swift中,<code>NSObject</code>的子类可以使用<code>copy</code>方法来复制实例对象，做法如下：</p>
+<ol>
+<li>子类必须声明并实现<code>NSCopying</code>协议；</li>
+<li>子类实现<code>copyWithZone:</code>方法；</li>
+<li>子类的构造方法<code>init</code>必须使用<code>requried</code>关键字修饰</li>
+</ol>
+<p>示例代码：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClazzA</span>: <span class="title">NSObject</span>, <span class="title">NSCopying</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> memberA = <span class="number">0</span>   </span><br><span class="line"></span><br><span class="line">    <span class="comment">//必须使用required关键字修饰</span></span><br><span class="line">    <span class="keyword">required</span> <span class="keyword">override</span> <span class="keyword">init</span>() &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">///实现copyWithZone方法</span></span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">copyWithZone</span><span class="params">(zone: NSZone)</span></span> -&gt; <span class="type">AnyObject</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> theCopyObj = <span class="keyword">self</span>.<span class="keyword">dynamicType</span>.<span class="keyword">init</span>()</span><br><span class="line">        theCopyObj.memberA = <span class="keyword">self</span>.memberA</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> theCopyObj</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>ClazzA</code>类直接继承NSObject，并且也实现了<code>NSCopying</code>的<code>copyWithZone</code>方法，所以调用<code>copy</code>方法来复制<code>ClazzA</code>对象是没有问题的。但是考虑到<code>ClazzA</code>可以作为其他类的基类，那么第12行代码<code>let theCopyObj = self.dynamicType.init()</code>就不能替换成<code>let theCopyObj = ClazzA()</code>，否则子类中强制类型转换时将发生异常。应该生成其子类型的对象，使用<code>dynamicType</code>来实例化子类型对象，<code>dynamicType</code>代表动态类型，即其最顶层的子类类型。</p>
+<p>假如此时<code>ClazzA</code>再派生一个子类<code>ClazzB</code>，使用<code>copy</code>方法来复制实例对象。可以先重载<code>copyWithZone</code>，然后再调用父类的<code>copyWithZone</code>来生成对象，最后对新复制的对象进行赋值，这点很重要，贴上代码一看就懂：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClazzB</span>: <span class="title">ClazzA</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> memberB = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">///重载copyWithZone</span></span><br><span class="line">    <span class="keyword">override</span> <span class="func"><span class="keyword">func</span> <span class="title">copyWithZone</span><span class="params">(zone: NSZone)</span></span> -&gt; <span class="type">AnyObject</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> theCopyObj = <span class="keyword">super</span>.copyWithZone(zone) <span class="keyword">as</span>! <span class="type">ClazzB</span></span><br><span class="line">        theCopyObj.memberB = <span class="keyword">self</span>.memberB</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> theCopyObj</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2016-01-30T09:29:22.000Z"><a href="/2016/01/30/flexible-usage-of-switch-case/">2016-01-30</a></time>
       
       
@@ -152,6 +196,8 @@
 <div class="widget tag">
   <h3 class="title">标签</h3>
   <ul class="entry">
+  
+    <li><a href="/tags/copy/">copy</a><small>1</small></li>
   
     <li><a href="/tags/swift/">swift</a><small>1</small></li>
   

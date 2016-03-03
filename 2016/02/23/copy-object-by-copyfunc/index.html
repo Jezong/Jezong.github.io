@@ -1,0 +1,194 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>如何使用copy方法来复制对象 | Jezong Wu</title>
+  <meta name="author" content="Jezong Wu">
+  
+  <meta name="description" content="在swift中,NSObject的子类可以使用copy方法来复制实例对象，做法如下：
+
+子类必须声明并实现NSCopying协议；
+子类实现copyWithZone:方法；
+子类的构造方法init必须使用requried关键字修饰
+
+示例代码：
+1234567891011121314151617cl">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="如何使用copy方法来复制对象"/>
+  <meta property="og:site_name" content="Jezong Wu"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Jezong Wu" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Jezong Wu</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+      <li><a href="/atom.xml">RSS</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-23T04:59:15.000Z"><a href="/2016/02/23/copy-object-by-copyfunc/">2016-02-23</a></time>
+      
+      
+  
+    <h1 class="title">如何使用copy方法来复制对象</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>在swift中,<code>NSObject</code>的子类可以使用<code>copy</code>方法来复制实例对象，做法如下：</p>
+<ol>
+<li>子类必须声明并实现<code>NSCopying</code>协议；</li>
+<li>子类实现<code>copyWithZone:</code>方法；</li>
+<li>子类的构造方法<code>init</code>必须使用<code>requried</code>关键字修饰</li>
+</ol>
+<p>示例代码：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClazzA</span>: <span class="title">NSObject</span>, <span class="title">NSCopying</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> memberA = <span class="number">0</span>   </span><br><span class="line"></span><br><span class="line">    <span class="comment">//必须使用required关键字修饰</span></span><br><span class="line">    <span class="keyword">required</span> <span class="keyword">override</span> <span class="keyword">init</span>() &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">///实现copyWithZone方法</span></span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">copyWithZone</span><span class="params">(zone: NSZone)</span></span> -&gt; <span class="type">AnyObject</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> theCopyObj = <span class="keyword">self</span>.<span class="keyword">dynamicType</span>.<span class="keyword">init</span>()</span><br><span class="line">        theCopyObj.memberA = <span class="keyword">self</span>.memberA</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> theCopyObj</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>ClazzA</code>类直接继承NSObject，并且也实现了<code>NSCopying</code>的<code>copyWithZone</code>方法，所以调用<code>copy</code>方法来复制<code>ClazzA</code>对象是没有问题的。但是考虑到<code>ClazzA</code>可以作为其他类的基类，那么第12行代码<code>let theCopyObj = self.dynamicType.init()</code>就不能替换成<code>let theCopyObj = ClazzA()</code>，否则子类中强制类型转换时将发生异常。应该生成其子类型的对象，使用<code>dynamicType</code>来实例化子类型对象，<code>dynamicType</code>代表动态类型，即其最顶层的子类类型。</p>
+<p>假如此时<code>ClazzA</code>再派生一个子类<code>ClazzB</code>，使用<code>copy</code>方法来复制实例对象。可以先重载<code>copyWithZone</code>，然后再调用父类的<code>copyWithZone</code>来生成对象，最后对新复制的对象进行赋值，这点很重要，贴上代码一看就懂：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClazzB</span>: <span class="title">ClazzA</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> memberB = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">///重载copyWithZone</span></span><br><span class="line">    <span class="keyword">override</span> <span class="func"><span class="keyword">func</span> <span class="title">copyWithZone</span><span class="params">(zone: NSZone)</span></span> -&gt; <span class="type">AnyObject</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> theCopyObj = <span class="keyword">super</span>.copyWithZone(zone) <span class="keyword">as</span>! <span class="type">ClazzB</span></span><br><span class="line">        theCopyObj.memberB = <span class="keyword">self</span>.memberB</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> theCopyObj</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+  
+  <div class="tags">
+    <a href="/tags/copy/">copy</a>
+  </div>
+
+        <div class="ds-share flat" data-thread-key="post-copy-object-by-copyfunc" data-title="如何使用copy方法来复制对象" data-content="&lt;p&gt;在swift中,&lt;code&gt;NSObject&lt;/code&gt;的子类可以使用&lt;code&gt;copy&lt;/code&gt;方法来复制实例对象，做法如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;子类必须声明并实现&lt;code&gt;NSCopying&lt;/code&gt;协议；&lt;/li&gt;
+&lt;li&gt;子类实现&lt;code&gt;copyWithZone:&lt;/code&gt;方法；&lt;/li&gt;
+&lt;li&gt;子类的构造方法&lt;code&gt;init&lt;/code&gt;必须使用&lt;code&gt;requried&lt;/code&gt;关键字修饰&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;示例代码：&lt;/p&gt;
+&lt;figure class=&quot;highlight swift&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ClazzA&lt;/span&gt;: &lt;span class=&quot;title&quot;&gt;NSObject&lt;/span&gt;, &lt;span class=&quot;title&quot;&gt;NSCopying&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; memberA = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;   &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//必须使用required关键字修饰&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;required&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;override&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;init&lt;/span&gt;() &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;///实现copyWithZone方法&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;copyWithZone&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(zone: NSZone)&lt;/span&gt;&lt;/span&gt; -&amp;gt; &lt;span class=&quot;type&quot;&gt;AnyObject&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; theCopyObj = &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.&lt;span class=&quot;keyword&quot;&gt;dynamicType&lt;/span&gt;.&lt;span class=&quot;keyword&quot;&gt;init&lt;/span&gt;()&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        theCopyObj.memberA = &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.memberA&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; theCopyObj&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;code&gt;ClazzA&lt;/code&gt;类直接继承NSObject，并且也实现了&lt;code&gt;NSCopying&lt;/code&gt;的&lt;code&gt;copyWithZone&lt;/code&gt;方法，所以调用&lt;code&gt;copy&lt;/code&gt;方法来复制&lt;code&gt;ClazzA&lt;/code&gt;对象是没有问题的。但是考虑到&lt;code&gt;ClazzA&lt;/code&gt;可以作为其他类的基类，那么第12行代码&lt;code&gt;let theCopyObj = self.dynamicType.init()&lt;/code&gt;就不能替换成&lt;code&gt;let theCopyObj = ClazzA()&lt;/code&gt;，否则子类中强制类型转换时将发生异常。应该生成其子类型的对象，使用&lt;code&gt;dynamicType&lt;/code&gt;来实例化子类型对象，&lt;code&gt;dynamicType&lt;/code&gt;代表动态类型，即其最顶层的子类类型。&lt;/p&gt;
+&lt;p&gt;假如此时&lt;code&gt;ClazzA&lt;/code&gt;再派生一个子类&lt;code&gt;ClazzB&lt;/code&gt;，使用&lt;code&gt;copy&lt;/code&gt;方法来复制实例对象。可以先重载&lt;code&gt;copyWithZone&lt;/code&gt;，然后再调用父类的&lt;code&gt;copyWithZone&lt;/code&gt;来生成对象，最后对新复制的对象进行赋值，这点很重要，贴上代码一看就懂：&lt;/p&gt;
+&lt;figure class=&quot;highlight swift&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ClazzB&lt;/span&gt;: &lt;span class=&quot;title&quot;&gt;ClazzA&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; memberB = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;///重载copyWithZone&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;override&lt;/span&gt; &lt;span class=&quot;func&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;copyWithZone&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(zone: NSZone)&lt;/span&gt;&lt;/span&gt; -&amp;gt; &lt;span class=&quot;type&quot;&gt;AnyObject&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; theCopyObj = &lt;span class=&quot;keyword&quot;&gt;super&lt;/span&gt;.copyWithZone(zone) &lt;span class=&quot;keyword&quot;&gt;as&lt;/span&gt;! &lt;span class=&quot;type&quot;&gt;ClazzB&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        theCopyObj.memberB = &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.memberB&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; theCopyObj&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+" data-url="http://jezong.github.io/2016/02/23/copy-object-by-copyfunc/">
+    <div class="ds-share-inline">
+      <ul  class="ds-share-icons-16">
+        
+        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+        <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+        <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+        <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+        <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+        
+      </ul>
+      <div class="ds-share-icons-more">
+      </div>
+    </div>
+ </div>
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+  <div class="ds-thread" data-thread-key="post-copy-object-by-copyfunc" data-title="如何使用copy方法来复制对象" data-url="http://jezong.github.io/2016/02/23/copy-object-by-copyfunc/"></div>
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:'jezong'};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+    </script>
+</section>
+
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="搜索">
+    <input type="hidden" name="q" value="site:jezong.github.io">
+  </form>
+</div>
+
+  
+
+  
+<div class="widget tag">
+  <h3 class="title">标签</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/copy/">copy</a><small>1</small></li>
+  
+    <li><a href="/tags/swift/">swift</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Jezong Wu
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>
