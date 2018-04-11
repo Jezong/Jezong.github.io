@@ -10,7 +10,7 @@
   
   <title>
     
-      用Alfred来快速搜索和打开Xcode工程 | Jezong Wu
+      UIGestureRecognizer的delegate方法调用顺序 | Jezong Wu
     
   </title>
   <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -138,8 +138,8 @@
 </header>
 
     <div id="article-banner">
-  <h2>用Alfred来快速搜索和打开Xcode工程</h2>
-  <p class="post-date">2017-01-07</p>
+  <h2>UIGestureRecognizer的delegate方法调用顺序</h2>
+  <p class="post-date">2017-10-13</p>
   <div class="arrow-down">
     <a href="javascript:;"></a>
   </div>
@@ -147,38 +147,61 @@
 <main class="app-body flex-box">
   <!-- Article START -->
   <article class="post-article">
-    <section class="markdown-content"><h2 id="u60F3_u6CD5"><a href="#u60F3_u6CD5" class="headerlink" title="想法"></a>想法</h2><p>Xcode用多了，工程创建了无数个，包括网上下载的工程也有无数个，虽然不常开，但每次要打开某个工程时，总是要到硬盘里翻个遍。养成文件归类的习惯很重要，如果有个更懒的方法那就更好了。平时喜欢用<a href="https://www.alfredapp.com/" target="_blank" rel="external">Alfred</a>来做事，于是就用python写了一个Workflow，用来搜索硬盘中Xcode工程并打开很方便。<a href="https://github.com/Jezong/SearchXcodeProjects" target="_blank" rel="external">项目</a>放在github中。</p>
-<h2 id="u529F_u80FD"><a href="#u529F_u80FD" class="headerlink" title="功能"></a>功能</h2><ol>
-<li>支持搜索<code>xcworkspace</code>、<code>xcproject</code>和<code>playground</code>工程</li>
-<li>模糊搜索</li>
-<li>拼音搜索</li>
-<li>按住<code>shift</code>键复制路径到剪切板</li>
-<li>按住<code>command</code>键在终端中打开</li>
-</ol>
-<p>模糊搜索：<br><img src="http://upload-images.jianshu.io/upload_images/2867450-1dbaa51031f39dac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="模糊搜索"></p>
-<p>拼音搜索：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/2867450-f00fa2248ae693b2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="拼音搜索"></p>
-<p>演示：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/2867450-ff917b6f2008b295.gif?imageMogr2/auto-orient/strip" alt="演示"></p>
-<h2 id="u6E29_u99A8_u63D0_u793A"><a href="#u6E29_u99A8_u63D0_u793A" class="headerlink" title="温馨提示"></a>温馨提示</h2><ul>
-<li><p>使用之前，必须先在<code>config.py</code>(workflow目录里)文件中配置<code>search_paths</code>，让脚本知道要在哪些路径去搜索你的Xcode工程。</p>
-</li>
-<li><p>暂时不支持中文字符，请用拼音代替</p>
-</li>
-</ul>
-<p><a href="https://github.com/Jezong/SearchXcodeProjects/raw/master/Search%20Xcode%20Projects.alfredworkflow" target="_blank" rel="external">直接下载请戳此处</a></p>
+    <section class="markdown-content"><h1 id="u524D_u8A00"><a href="#u524D_u8A00" class="headerlink" title="前言"></a>前言</h1><p>iOS系统中，如果要给View添加手势，CocoaTouch本来就提供了多个<code>UIGestureRecognizer</code>派生类，一般情况下足够使用了。当然，有些的页面交互的交互比较特殊，需要我们自定义手势，而自定义手势，最麻烦的就是经常忘记那几个<code>delegate</code>方法的被调用顺序。</p>
+<h1 id="u4E09_u4E2Adelegate_u65B9_u6CD5"><a href="#u4E09_u4E2Adelegate_u65B9_u6CD5" class="headerlink" title="三个delegate方法"></a>三个delegate方法</h1><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/// 1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/// 是否允许和其他手势一起识别</span></span><br><span class="line"></span><br><span class="line"><span class="func"><span class="keyword">func</span> <span class="title">gestureRecognizer</span><span class="params">(<span class="number">_</span> gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer)</span></span> -&gt; <span class="type">Bool</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/// 2</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/// 是否让其他手势失败</span></span><br><span class="line"></span><br><span class="line"><span class="func"><span class="keyword">func</span> <span class="title">gestureRecognizer</span><span class="params">(<span class="number">_</span> gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer)</span></span> -&gt; <span class="type">Bool</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/// 3</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/// 是否被其他手势要求失败</span></span><br><span class="line"></span><br><span class="line"><span class="func"><span class="keyword">func</span> <span class="title">gestureRecognizer</span><span class="params">(<span class="number">_</span> gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer)</span></span> -&gt; <span class="type">Bool</span></span><br></pre></td></tr></table></figure>
+<h1 id="u8C03_u7528_u987A_u5E8F"><a href="#u8C03_u7528_u987A_u5E8F" class="headerlink" title="调用顺序"></a>调用顺序</h1><p>我们在UITableView中添加一个自定义的手势，该手势实现长按时可拖动cell，类似于Drag。UITableView默认就有了一些手势</p>
+<p>先来看调用顺序打印的日志：</p>
+<blockquote>
+<p>gestureRecognizer(_:shouldReceive:)</p>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>shouldRequireFailure(of:) -&gt; UILongPressGestureRecognizer</p>
+<p>shouldBeRequiredToFail(by:) -&gt; UILongPressGestureRecognizer</p>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>shouldRequireFailure(of:) -&gt; _UISystemGestureGateGestureRecognizer</p>
+<p>shouldRequireFailure(of:) -&gt; _UISystemGestureGateGestureRecognizer</p>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>shouldRequireFailure(of:) -&gt; UIScrollViewDelayedTouchesBeganGestureRecognizer</p>
+<p>shouldBeRequiredToFail(by:) -&gt; UIScrollViewDelayedTouchesBeganGestureRecognizer</p>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>shouldRequireFailure(of:) -&gt; UIScrollViewPanGestureRecognizer</p>
+<p>shouldBeRequiredToFail(by:) -&gt; UIScrollViewPanGestureRecognizer</p>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>shouldRequireFailure(of:) -&gt; UIPanGestureRecognizer</p>
+<p>shouldBeRequiredToFail(by:) -&gt; UIPanGestureRecognizer</p>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>gestureRecognizer(_:shouldRecognizeSimultaneouslyWith:) -&gt; UIScrollViewPanGestureRecognizer</p>
+</blockquote>
+<p>当view获取到焦点后，手势识别器(Gesture Recognizer)第一个会调用<code>delegate</code>的<code>gestureRecognizerShouldBegin</code>方法，询问是否应该接收触摸事件，当返回true时，手势识别器的<code>touchesBegan</code>方法被调用，同时，<code>shouldRequireFailure(of:)</code>和<code>shouldBeRequiredToFail(by:)</code>这2个方法也会被调用，但这里并不是一起调用的，而是<code>shouldRequireFailure</code>先被调用，询问是否让其他手势识别器失效，如果返回true，则对于同一个手势识别器，不会再调用<code>shouldBeRequiredToFail</code>方法了，</p>
+<p>上面日志中，我们可以看到<code>UILongPressGestureRecognizer</code>打印了2次，第一次是在<code>shouldRequireFailure</code>方法打印的，第二次是在<code>shouldBeRequiredToFail</code>方法打印的，因为前者返回了false，才导致后者被调用。相反，前者返回true，后者则不会被调用。类似地，之后的几个手势识别器也是一样。一般情况下，这两个方法都是会先后调用，当前的view有多少个手势识别器就会有多少次询问，这是为了避免2个手势之间发生冲突。</p>
+<p>假如两个不同的view之间的手势也要避免冲突，则可以使用以下方法进行关联：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">open <span class="func"><span class="keyword">func</span> <span class="title">require</span><span class="params">(toFail otherGestureRecognizer: UIGestureRecognizer)</span></span></span><br></pre></td></tr></table></figure>
+<p>我们来看日志的最后一行，这里其实是滑动tableview时<code>UIScrollViewPanGestureRecognizer</code>开始识别了，所以会询问这个自定义的手势识别器，是否允许和滑动手势一起识别。</p>
+<p>以上，</p>
+<p>写的有点乱，有空再整理一下。</p>
 </section>
     <!-- Tags START -->
     
       <div class="tags">
         <span>Tags:</span>
         
-  <a href="/tags#Alfred" >
-    <span class="tag-code">Alfred</span>
+  <a href="/tags#UI" >
+    <span class="tag-code">UI</span>
   </a>
 
-  <a href="/tags#Xcode" >
-    <span class="tag-code">Xcode</span>
+  <a href="/tags#iOS" >
+    <span class="tag-code">iOS</span>
   </a>
 
       </div>
@@ -189,20 +212,13 @@
   <div class="nav-container">
     <!-- reverse left and right to put prev and next in a more logic postition -->
     
-      <a class="nav-left" href="/crash-in-ios8-using-xcode8/">
+      <a class="nav-left" href="/search-xcode-project-by-alfred/">
         <span class="nav-arrow">← </span>
         
-          Xcode8编译包在iOS8中运行异常闪退问题
+          用Alfred来快速搜索和打开Xcode工程
         
       </a>
     
-    
-      <a class="nav-right" href="/call-gesture-recognizer-delegate/">
-        
-          UIGestureRecognizer的delegate方法调用顺序
-        
-        <span class="nav-arrow"> →</span>
-      </a>
     
   </div>
 
@@ -248,7 +264,7 @@
   <div class="toc-main">
     <strong class="toc-title">Catalog</strong>
     
-      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#u60F3_u6CD5"><span class="toc-nav-text">想法</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#u529F_u80FD"><span class="toc-nav-text">功能</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#u6E29_u99A8_u63D0_u793A"><span class="toc-nav-text">温馨提示</span></a></li></ol>
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#u524D_u8A00"><span class="toc-nav-text">前言</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#u4E09_u4E2Adelegate_u65B9_u6CD5"><span class="toc-nav-text">三个delegate方法</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#u8C03_u7528_u987A_u5E8F"><span class="toc-nav-text">调用顺序</span></a></li></ol>
     
   </div>
 </aside>
@@ -258,7 +274,7 @@
 
 <script>
   (function () {
-    var url = 'http://jezong.github.io/search-xcode-project-by-alfred/';
+    var url = 'http://jezong.github.io/call-gesture-recognizer-delegate/';
     var banner = 'undefined'
     if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
       $('#article-banner').css({
@@ -314,7 +330,7 @@
     var gitmentConfig = "jezong";
     if (gitmentConfig !== 'undefined') {
       var gitment = new Gitment({
-        id: "用Alfred来快速搜索和打开Xcode工程",
+        id: "UIGestureRecognizer的delegate方法调用顺序",
         owner: "jezong",
         repo: "jezong.github.io",
         oauth: {
