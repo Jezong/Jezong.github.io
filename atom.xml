@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://jezong.github.io/"/>
-  <updated>2016-03-03T05:13:46.000Z</updated>
+  <updated>2018-04-11T07:02:52.007Z</updated>
   <id>http://jezong.github.io/</id>
   
   <author>
@@ -15,11 +15,138 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[用Alfred来快速搜索和打开Xcode工程]]></title>
+    <link href="http://jezong.github.io/search-xcode-project-by-alfred/"/>
+    <id>http://jezong.github.io/search-xcode-project-by-alfred/</id>
+    <published>2017-01-07T07:33:15.000Z</published>
+    <updated>2018-04-11T07:02:52.007Z</updated>
+    <content type="html"><![CDATA[<h2 id="u60F3_u6CD5"><a href="#u60F3_u6CD5" class="headerlink" title="想法"></a>想法</h2><p>Xcode用多了，工程创建了无数个，包括网上下载的工程也有无数个，虽然不常开，但每次要打开某个工程时，总是要到硬盘里翻个遍。养成文件归类的习惯很重要，如果有个更懒的方法那就更好了。平时喜欢用<a href="https://www.alfredapp.com/" target="_blank" rel="external">Alfred</a>来做事，于是就用python写了一个Workflow，用来搜索硬盘中Xcode工程并打开很方便。<a href="https://github.com/Jezong/SearchXcodeProjects" target="_blank" rel="external">项目</a>放在github中。</p>
+<h2 id="u529F_u80FD"><a href="#u529F_u80FD" class="headerlink" title="功能"></a>功能</h2><ol>
+<li>支持搜索<code>xcworkspace</code>、<code>xcproject</code>和<code>playground</code>工程</li>
+<li>模糊搜索</li>
+<li>拼音搜索</li>
+<li>按住<code>shift</code>键复制路径到剪切板</li>
+<li>按住<code>command</code>键在终端中打开</li>
+</ol>
+<p>模糊搜索：<br><img src="http://upload-images.jianshu.io/upload_images/2867450-1dbaa51031f39dac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="模糊搜索"></p>
+<p>拼音搜索：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/2867450-f00fa2248ae693b2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="拼音搜索"></p>
+<p>演示：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/2867450-ff917b6f2008b295.gif?imageMogr2/auto-orient/strip" alt="演示"></p>
+<h2 id="u6E29_u99A8_u63D0_u793A"><a href="#u6E29_u99A8_u63D0_u793A" class="headerlink" title="温馨提示"></a>温馨提示</h2><ul>
+<li><p>使用之前，必须先在<code>config.py</code>(workflow目录里)文件中配置<code>search_paths</code>，让脚本知道要在哪些路径去搜索你的Xcode工程。</p>
+</li>
+<li><p>暂时不支持中文字符，请用拼音代替</p>
+</li>
+</ul>
+<p><a href="https://github.com/Jezong/SearchXcodeProjects/raw/master/Search%20Xcode%20Projects.alfredworkflow" target="_blank" rel="external">直接下载请戳此处</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="u60F3_u6CD5"><a href="#u60F3_u6CD5" class="headerlink" title="想法"></a>想法</h2><p>Xcode用多了，工程创建了无数个，包括网上下载的工程也有无数个，虽然不常开，但每次要打开某个工程时，总]]>
+    </summary>
+    
+      <category term="Alfred" scheme="http://jezong.github.io/tags/Alfred/"/>
+    
+      <category term="Xcode" scheme="http://jezong.github.io/tags/Xcode/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Xcode8编译包在iOS8中运行异常闪退问题]]></title>
+    <link href="http://jezong.github.io/crash-in-ios8-using-xcode8/"/>
+    <id>http://jezong.github.io/crash-in-ios8-using-xcode8/</id>
+    <published>2016-09-22T06:05:00.000Z</published>
+    <updated>2018-04-11T06:28:34.073Z</updated>
+    <content type="html"><![CDATA[<p>升级Xcode8后，编译的app在iOS8中出现崩溃的情况<br>异常断点停留在加载图片的时候：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[UIImage imageNamed:@&#34;icon&#34;];</span><br></pre></td></tr></table></figure></p>
+<p>当然，更多时候断点是随机的，真机运行时控制台输出以下log：</p>
+<blockquote>
+<p>“malloc: <strong><em> error for object 0x17415d0c0: Invalid pointer dequeued from free list </em></strong> set a breakpoint in malloc_error_break to debug”;</p>
+</blockquote>
+<p>无论怎么调试怎么改代码，动用Instruments依然找不出问题。奇怪的是， Xcode7打出来的包并没有出现这种问题。<br>后来在苹果的开发者论坛找到了<a href="https://forums.developer.apple.com/thread/60919" target="_blank" rel="external">回答</a>：</p>
+<blockquote>
+<p><strong>ERROR ITMS-90682: Invalid Bundle - The asset catalog at ‘Payload/XXXXX/Assets.car’ can’t contain 16-bit or P3 assets if the app supports iOS 8 or earlier</strong></p>
+</blockquote>
+<p>原来是图片出了问题，其实就是使用了16位或P3图，什么意思呢？P3是指图片的色域范围，正常图片都是sRGB的，但是用16位或P3并没有警告和报错。Xcode8编译打包的app中，含有16位P3在iOS9.3以下的系统都会出现奔溃现象。那么怎么把工程中的P3图片找出来呢？原帖给出了方法。</p>
+<p>#解决方法</p>
+<p>xcode命令行提供了一个检索图片属性的工具，我们只需要把打包的所有图片资源传给工具执行就可以了：</p>
+<ol>
+<li><p>运行工程后一般在<code>Products</code>分组下面都会有<code>.app</code>后缀的app包生成，对着它<strong>右键</strong> -&gt; <strong>Show in Finder</strong>，然后在Finder打开的文件夹中，对着<code>.app</code>文件右键，<strong>按住option键</strong>，然后就可以看到<strong>『将xxx拷贝为路径名称』</strong>，我们主要是为了拷贝文件的路径。<br>2 .打开终端，然后用<code>cd</code>命令进入拷贝的目录，执行以下命令找到<code>Asset.car</code>文件：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find . -name &#39;Assets.car&#39;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>用工具生成图片资源的属性表：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#160;xcrun --sdk iphoneos assetutil --info /path/to/a/Assets.car &#62; /tmp/Assets.json</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>/path/to/a/Assets.car</code>指第2步搜索到Asset.car文件目录。<br><code>/tmp/Assets.json</code>指属性表保存的目录</p>
+<ol>
+<li>打开<code>Assets.json</code>，在文件里搜索<code>&quot;DisplayGamut&quot;</code>字段为<code>&quot;P3&quot;</code>的即为要找的图片，<code>&quot;Name&quot;</code>字段就是图片资源名。</li>
+<li>把这些有问题的图片整理出来，麻烦切图的同事切色域为sRGB的图替换掉就可以了。</li>
+</ol>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>升级Xcode8后，编译的app在iOS8中出现崩溃的情况<br>异常断点停留在加载图片的时候：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</sp]]>
+    </summary>
+    
+      <category term="Xcode" scheme="http://jezong.github.io/tags/Xcode/"/>
+    
+      <category term="iOS" scheme="http://jezong.github.io/tags/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[设置UITableView的section header或footer高度为0]]></title>
+    <link href="http://jezong.github.io/set-tableview-header-height-to-zero/"/>
+    <id>http://jezong.github.io/set-tableview-header-height-to-zero/</id>
+    <published>2016-09-08T09:04:33.000Z</published>
+    <updated>2018-04-11T06:27:49.608Z</updated>
+    <content type="html"><![CDATA[<p>为了设置高度为0，经常在<code>tableView:heightForHeaderInSection</code>方法返回0或者负数都无效，无论怎么改tableView的<code>sectionHeaderHeight</code>和<code>estimatedSectionHeaderHeight</code>属性也都无效。</p>
+<p>有个办法就是在<code>heightForHeaderInSection</code>返回<code>CGFLOAT_MIN</code>，如下代码：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#10;- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section &#123;&#10;&#10;// Removes extra padding in Grouped style&#10;&#10;return CGFLOAT_MIN;&#10;&#10;&#125;&#10;&#10;- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section &#123;&#10;&#10;// Removes extra padding in Grouped style&#10;&#10;return CGFLOAT_MIN;&#10;&#10;&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>注意：</strong></p>
+<ol>
+<li><p><code>CGFLOAT_MIN</code>在swift中的形式是<code>CGFloat.min</code>。</p>
+</li>
+<li><p>设置tableView的<code>sectionHeaderHeight</code>或<code>estimatedSectionHeaderHeight</code>为<code>CGFLOAT_MIN</code>都是无效的，最终还是要在<code>tableView:heightForHeaderInSection</code>方法返回<code>CGFLOAT_MIN</code>。</p>
+</li>
+</ol>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>为了设置高度为0，经常在<code>tableView:heightForHeaderInSection</code>方法返回0或者负数都无效，无论怎么改tableView的<code>sectionHeaderHeight</code>和<code>estimatedSe]]>
+    </summary>
+    
+      <category term="iOS" scheme="http://jezong.github.io/tags/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[AutoLayout如何让子view跟随父view的顶部或底部]]></title>
+    <link href="http://jezong.github.io/make-subview-margin-superview/"/>
+    <id>http://jezong.github.io/make-subview-margin-superview/</id>
+    <published>2016-08-27T03:15:00.000Z</published>
+    <updated>2018-04-11T06:28:30.717Z</updated>
+    <content type="html"><![CDATA[<p>一般情况下，右键拖动子view到父view上，xcode弹出选框如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/2867450-c31a13687b98d7de.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image"></p>
+<p>我们可以看到，spacing只能关联到 Top Layout Guide 或 Bottom Layout Guide，并不能关联父view的Top和Bottom</p>
+<p>在Xcode7或之后版本，可以按住 <code>ALT/OPTION</code>(<code>⌥</code>) 键，就可以选择关联父view的Top或Bottom了，如下图，Container即为父view，Top Space to Container Margin 就是和父view顶部关联。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/2867450-4fd101c475ef269a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image"></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>一般情况下，右键拖动子view到父view上，xcode弹出选框如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/2867450-c31a13687b98d7de.png?imageMog]]>
+    </summary>
+    
+      <category term="AutoLayout" scheme="http://jezong.github.io/tags/AutoLayout/"/>
+    
+      <category term="iOS" scheme="http://jezong.github.io/tags/iOS/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[如何使用copy方法来复制对象]]></title>
-    <link href="http://jezong.github.io/2016/02/23/copy-object-by-copyfunc/"/>
-    <id>http://jezong.github.io/2016/02/23/copy-object-by-copyfunc/</id>
+    <link href="http://jezong.github.io/copy-object-by-copyfunc/"/>
+    <id>http://jezong.github.io/copy-object-by-copyfunc/</id>
     <published>2016-02-23T04:59:15.000Z</published>
-    <updated>2016-03-03T05:13:46.000Z</updated>
+    <updated>2018-04-11T07:02:59.162Z</updated>
     <content type="html"><![CDATA[<p>在swift中,<code>NSObject</code>的子类可以使用<code>copy</code>方法来复制实例对象，做法如下：</p>
 <ol>
 <li>子类必须声明并实现<code>NSCopying</code>协议；</li>
@@ -39,16 +166,16 @@
 <li>子类实现<code>c]]>
     </summary>
     
-      <category term="copy" scheme="http://jezong.github.io/tags/copy/"/>
+      <category term="Swift" scheme="http://jezong.github.io/tags/Swift/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[重载运算符在switch-case中的灵活用法]]></title>
-    <link href="http://jezong.github.io/2016/01/30/flexible-usage-of-switch-case/"/>
-    <id>http://jezong.github.io/2016/01/30/flexible-usage-of-switch-case/</id>
+    <link href="http://jezong.github.io/flexible-usage-of-switch-case/"/>
+    <id>http://jezong.github.io/flexible-usage-of-switch-case/</id>
     <published>2016-01-30T09:29:22.000Z</published>
-    <updated>2016-01-30T10:26:59.000Z</updated>
+    <updated>2018-04-11T07:02:42.453Z</updated>
     <content type="html"><![CDATA[<h2 id="u795E_u5947_u7684Swift"><a href="#u795E_u5947_u7684Swift" class="headerlink" title="神奇的Swift"></a>神奇的Swift</h2><p>swift的<code>switch-case</code>语句可以非常灵活的进行匹配，每个<code>case</code>段可以对应一个或多个匹配项，这比其他语言都要好用。比如<a href="https://developer.apple.com/library/mac/documentation/Swift/Conceptual/Swift_Programming_Language/index.html" target="_blank" rel="external">苹果官方文档</a>中列举了一个<a href="https://developer.apple.com/library/mac/documentation/Swift/Conceptual/Swift_Programming_Language/TypeCasting.html" target="_blank" rel="external">例子</a>：</p>
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> thing <span class="keyword">in</span> things &#123;</span><br><span class="line">    <span class="keyword">switch</span> thing &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">0</span> <span class="keyword">as</span> <span class="type">Int</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">"zero as an Int"</span>)</span><br><span class="line">    <span class="keyword">case</span> <span class="number">0</span> <span class="keyword">as</span> <span class="type">Double</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">"zero as a Double"</span>)</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">let</span> someInt <span class="keyword">as</span> <span class="type">Int</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">"an integer value of <span class="subst">\(someInt)</span>"</span>)</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">let</span> someDouble <span class="keyword">as</span> <span class="type">Double</span> <span class="keyword">where</span> someDouble &gt; <span class="number">0</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">"a positive double value of <span class="subst">\(someDouble)</span>"</span>)</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">is</span> <span class="type">Double</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">"some other double value that I don't want to print"</span>)</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">let</span> someString <span class="keyword">as</span> <span class="type">String</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">"a string value of \"<span class="subst">\(someString)</span>\""</span>)</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">let</span> (x, y) <span class="keyword">as</span> (<span class="type">Double</span>, <span class="type">Double</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">"an (x, y) point at <span class="subst">\(x)</span>, <span class="subst">\(y)</span>"</span>)</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">let</span> movie <span class="keyword">as</span> <span class="type">Movie</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">"a movie called '<span class="subst">\(movie.name)</span>', dir. <span class="subst">\(movie.director)</span>"</span>)</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">let</span> stringConverter <span class="keyword">as</span> <span class="type">String</span> -&gt; <span class="type">String</span>:</span><br><span class="line">        <span class="built_in">print</span>(stringConverter(<span class="string">"Michael"</span>))</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">"something else"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// zero as an Int</span></span><br><span class="line"><span class="comment">// zero as a Double</span></span><br><span class="line"><span class="comment">// an integer value of 42</span></span><br><span class="line"><span class="comment">// a positive double value of 3.14159</span></span><br><span class="line"><span class="comment">// a string value of "hello"</span></span><br><span class="line"><span class="comment">// an (x, y) point at 3.0, 5.0</span></span><br><span class="line"><span class="comment">// a movie called 'Ghostbusters', dir. Ivan Reitman</span></span><br><span class="line"><span class="comment">// Hello, Michael</span></span><br></pre></td></tr></table></figure>
 <h2 id="u4E00_u4E2A_u4F8B_u5B50"><a href="#u4E00_u4E2A_u4F8B_u5B50" class="headerlink" title="一个例子"></a>一个例子</h2><p>默认情况下，case后面是不支持Array数组的，如果你使用数组当作<code>case</code>的匹配条件的话，编译就会失败，比如下面这种情况：</p>
@@ -69,14 +196,14 @@
     <![CDATA[<h2 id="u795E_u5947_u7684Swift"><a href="#u795E_u5947_u7684Swift" class="headerlink" title="神奇的Swift"></a>神奇的Swift</h2><p>swift的<code>switch]]>
     </summary>
     
-      <category term="swift" scheme="http://jezong.github.io/tags/swift/"/>
+      <category term="Swift" scheme="http://jezong.github.io/tags/Swift/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[第一篇博客]]></title>
-    <link href="http://jezong.github.io/2016/01/19/first-post/"/>
-    <id>http://jezong.github.io/2016/01/19/first-post/</id>
+    <link href="http://jezong.github.io/first-post/"/>
+    <id>http://jezong.github.io/first-post/</id>
     <published>2016-01-19T14:03:11.000Z</published>
     <updated>2016-01-20T09:44:44.000Z</updated>
     <content type="html"><![CDATA[<p>看过许多大牛的博客，读他们的文章使我受益匪浅，少走很多弯路，我发自内心的感激他们。我每次发现一位大牛都会去订阅他的博客，渐渐地，订阅的越来越多，每天都有新的文章推送，每天都像看报纸一样去看他们的博客。做一个大牛，不是因为要发表有深度的文章，我觉得更重要的是，写博客可以记录自己、表达自己，是成长、通往牛逼的路；当然，能帮助别人也是一种快乐，是正能量。</p>

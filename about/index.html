@@ -10,7 +10,7 @@
   
   <title>
     
-      Jezong Wu
+      About | Jezong Wu
     
   </title>
   <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -137,78 +137,45 @@
   </div>
 </header>
 
-    <div id="article-banner">
-  <h2>Archives</h2>
-  <p class="post-date">文章归档</p>
+    <div id="about-banner" style="background-image: url(http://file.muyutech.com/about.jpg)"></div>
+<div class="author">
+  <div class="head">
+    <img src="https://avatars0.githubusercontent.com/u/6898755?s=460&v=4" />
+  </div>
+  <h3>Jezong Wu</h3>
+  
+    <p class="description">一名iOS开发者</p>
+  
+  <section class="share-icons">
+    
+    
+    
+      <a class="icon-github" href="https://github.com/jezong" target="_blank">
+        <span class="fa-stack fa-lg">
+          <i class="fa fa-circle fa-stack-2x"></i>
+          <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+        </span>
+      </a>
+    
+    
+    
+  </section>
 </div>
-<main class="app-body" id="archives">
-  
-  
-  
-    <section class="time-section">
-  <h1 class="section-year">
-    2017
-  </h1>
-  <div class="section-list">
-    
-    
-      <div class="section-list-item">
-        <a href="/search-xcode-project-by-alfred/" class="archive-title">用Alfred来快速搜索和打开Xcode工程</a>
-        <p class="archive-date">01-07</p>
-      </div>
-    
-  </div>
-</section>
-  
-    <section class="time-section">
-  <h1 class="section-year">
-    2016
-  </h1>
-  <div class="section-list">
-    
-    
-      <div class="section-list-item">
-        <a href="/crash-in-ios8-using-xcode8/" class="archive-title">Xcode8编译包在iOS8中运行异常闪退问题</a>
-        <p class="archive-date">09-22</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/set-tableview-header-height-to-zero/" class="archive-title">设置UITableView的section header或footer高度为0</a>
-        <p class="archive-date">09-08</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/make-subview-margin-superview/" class="archive-title">AutoLayout如何让子view跟随父view的顶部或底部</a>
-        <p class="archive-date">08-27</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/copy-object-by-copyfunc/" class="archive-title">如何使用copy方法来复制对象</a>
-        <p class="archive-date">02-23</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/flexible-usage-of-switch-case/" class="archive-title">重载运算符在switch-case中的灵活用法</a>
-        <p class="archive-date">01-30</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/first-post/" class="archive-title">第一篇博客</a>
-        <p class="archive-date">01-19</p>
-      </div>
-    
-  </div>
-</section>
-  
-</main>
 
 <script>
   (function () {
-    var url = 'http://jezong.github.io/archives/index.html';
-    $('#article-banner').geopattern(url);
-    $('.header').removeClass('fixed-header');
+    $('.header').removeClass('fixed-header')
+    var windowH = $(window).height();
+    var author = $('.author')
+    var bodyH = author.offset().top + author[0].offsetHeight + 71;
+    if (bodyH < windowH) {
+      author.css({
+        'margin-bottom': windowH - bodyH
+      })
+    }
   })();
 </script>
+
     <div class="scroll-top">
   <span class="arrow-icon"></span>
 </div>

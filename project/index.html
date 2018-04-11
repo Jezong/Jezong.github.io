@@ -10,7 +10,7 @@
   
   <title>
     
-      Jezong Wu
+      Project | Jezong Wu
     
   </title>
   <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -138,76 +138,54 @@
 </header>
 
     <div id="article-banner">
-  <h2>Archives</h2>
-  <p class="post-date">文章归档</p>
+  <h2>Projects</h2>
+  <p class="post-date">开源项目</p>
 </div>
-<main class="app-body" id="archives">
-  
-  
-  
-    <section class="time-section">
-  <h1 class="section-year">
-    2017
-  </h1>
-  <div class="section-list">
-    
-    
-      <div class="section-list-item">
-        <a href="/search-xcode-project-by-alfred/" class="archive-title">用Alfred来快速搜索和打开Xcode工程</a>
-        <p class="archive-date">01-07</p>
-      </div>
-    
-  </div>
-</section>
-  
-    <section class="time-section">
-  <h1 class="section-year">
-    2016
-  </h1>
-  <div class="section-list">
-    
-    
-      <div class="section-list-item">
-        <a href="/crash-in-ios8-using-xcode8/" class="archive-title">Xcode8编译包在iOS8中运行异常闪退问题</a>
-        <p class="archive-date">09-22</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/set-tableview-header-height-to-zero/" class="archive-title">设置UITableView的section header或footer高度为0</a>
-        <p class="archive-date">09-08</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/make-subview-margin-superview/" class="archive-title">AutoLayout如何让子view跟随父view的顶部或底部</a>
-        <p class="archive-date">08-27</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/copy-object-by-copyfunc/" class="archive-title">如何使用copy方法来复制对象</a>
-        <p class="archive-date">02-23</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/flexible-usage-of-switch-case/" class="archive-title">重载运算符在switch-case中的灵活用法</a>
-        <p class="archive-date">01-30</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/first-post/" class="archive-title">第一篇博客</a>
-        <p class="archive-date">01-19</p>
-      </div>
-    
-  </div>
-</section>
-  
+<main class="app-body project-app">
+  <div class="card-container" id="all-project"></div>
 </main>
-
 <script>
-  (function () {
-    var url = 'http://jezong.github.io/archives/index.html';
+  (function() {
+    var url = 'http://jezong.github.io/project/index.html';
     $('#article-banner').geopattern(url);
-    $('.header').removeClass('fixed-header');
-  })();
+    $('.header').removeClass('fixed-header')
+    $.ajax({
+      headers: {
+        Accept: 'application/vnd.github.v3.raw'
+      },
+      type: 'get',
+      url: 'https://api.github.com/users/jezong/repos',
+      success: function (data) {
+        var repos = data.sort(function(a, b) {
+          return (b.stargazers_count - a.stargazers_count)
+        }).slice(0, 6)
+        var cardHtml = repos.map(function(item) {
+          var description = item.description || ""
+          if (description.replace(/[\u0391-\uFFE5]/g, "aa").length > 72) {
+            description = description.slice(0, 72) + '...'
+          }
+          return (
+            '<section class="project-card">' + 
+              '<a class="card-wrap" href="'+ item.html_url +'" target="_blank">' +
+                '<div class="card-header" data-name="'+ item.name +'"></div>' +
+                '<h3 class="card-title">' + item.name + '</h3>' +
+                '<p class="card-description">' + description + '</p>' +
+                '<div class="card-footer">' +
+                  '<span><i class="fa fa-star"></i>'+ item.stargazers_count +'</span>' +
+                  '<span><i class="fa fa-code-fork"></i>' + item.forks_count +'</span>' +
+                '</div>' +
+              '</a>' +
+            '</section>'
+          )
+        }).join('')
+        $('#all-project').html(cardHtml)
+        $('.card-header').each(function() {
+          var name = $(this).data('name');
+          $(this).geopattern(name);
+        })
+      }
+    });
+  })()
 </script>
     <div class="scroll-top">
   <span class="arrow-icon"></span>
